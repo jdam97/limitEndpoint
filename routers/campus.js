@@ -14,8 +14,21 @@ appCampus.get("/",limitGrt(), async(req,res)=>{
     let usuario = db.collection("usuario");
     let result = await usuario.find({_id: new ObjectId(id)}).toArray();
     res.send(result)
-    
-    
+})
+
+//Post
+appCampus.post("/",limitGrt(),async(req,res)=>{
+    if(!req.rateLimit) return;
+    let db = await con();
+    let usuario = db.collection("usuario");
+    try{
+        let result = await usuario.insertOne(req.body);
+        console.log(result);
+        res.send("tolis");
+    } catch (error){
+        console.log(error);
+        res.send("pailas")
+    }
 })
 
 export default appCampus

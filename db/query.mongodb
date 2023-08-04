@@ -2,7 +2,38 @@ use('db_limit_mongo')
 db.createCollection('usuario',{
     capped: true,
     size: 690,
-    max: 5
+    max: 5,
+    validator:{
+        $jsonSchema: {
+            bsonType:'object',
+            additionalProperties: false,
+            required: ['nombre', 'edad'],
+            properties: {
+                nombre:{
+                    bsonType: 'string',
+                    description: 'El nombre es obligatorio y debe  ser de tipo string'
+                },
+                apellido:{
+                    bsonType:'string',
+                    description:'El apellido debe ser de tipo string'
+                },
+                edad:{
+                    bsonType:'number',
+                    description:'La edad es obligatorio y debe ser de tipo number'
+                }
+            },
+            allOf:[
+                {
+                    properties:{
+                        email:{
+                            bsonType:'string',
+                            description:'El email no es obligatorio'
+                        }
+                    }
+                }
+            ]
+        }
+    }
 })
 
 use('db_limit_mongo');
