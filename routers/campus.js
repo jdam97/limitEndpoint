@@ -31,4 +31,26 @@ appCampus.post("/",limitGrt(),async(req,res)=>{
     }
 })
 
+//Delete
+appCampus.delete("/",limitGrt(),async(req,res)=>{
+    if(!req.rateLimit) return;
+    let {_id} = req.body;
+    let db = await con();
+    let usuario = db.collection("usuario");
+    try{
+        let result = await usuario.deleteOne({_id:new ObjectId(_id)});
+        if (result.deletedCount===1) {
+            console.log(result);
+            res.send(`eliminado`)
+        }
+        else{
+            res.send(`id no encontrado, no se puso eliminar`)
+        }     
+    } catch (error){
+        console.log(error);
+        res.send("no se ha borrado")
+    }
+})
+
 export default appCampus
+
