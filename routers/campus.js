@@ -17,7 +17,7 @@ appCampus.get("/",limitGrt(), async(req,res)=>{
 })
 
 //Post
-appCampus.post("/",limitGrt(),async(req,res)=>{
+appCampus.post("/",limitGrt(),appmiddlewareCampus,async(req,res)=>{
     if(!req.rateLimit) return;
     let db = await con();
     let usuario = db.collection("usuario");
