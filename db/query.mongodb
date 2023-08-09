@@ -9,29 +9,28 @@ db.createCollection('usuario',{
             additionalProperties: false,
             required: ['nombre', 'edad'],
             properties: {
-                nombre:{
+                _id:{
+                    bsonType: 'objectId',
+                },
+                cc:{
+                    bsonType: "int",
+                    description: "La cedula es obligatorio y tiene que se de tipo numerico"
+                },
+                nombre: { 
+                    // https://www.mongodb.com/docs/atlas/app-services/schemas/types/#std-label-schema-type-string
                     bsonType: 'string',
-                    description: 'El nombre es obligatorio y debe  ser de tipo string'
+                    description: '{"status": "402", "message": "El nombre_usuario es obligatorio y solo resive letras"}' ,
+                    pattern: "^[a-zA-Z ]+$"
                 },
-                apellido:{
-                    bsonType:'string',
-                    description:'El apellido debe ser de tipo string'
+                apellido: { 
+                    bsonType: 'string',
+                    description: 'El apellido debe ser un string' 
                 },
-                edad:{
-                    bsonType:'number',
-                    description:'La edad es obligatorio y debe ser de tipo number'
+                edad: { 
+                    bsonType: 'int',
+                    description: '{"status": "402", "message": "La edad_usuario es obligatorio y debe ser un numero"}' 
                 }
-            },
-            allOf:[
-                {
-                    properties:{
-                        email:{
-                            bsonType:'string',
-                            description:'El email no es obligatorio'
-                        }
-                    }
-                }
-            ]
+            }
         }
     }
 })

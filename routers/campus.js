@@ -1,33 +1,39 @@
 import { Router } from "express";
 import { con } from "../db/atlas.js"
 import { limitGrt } from "../limit/config.js";
+import {appMiddlewareCampusVerify, appDTOData} from "../middleware/campus.js";
 import { ObjectId } from "mongodb";
 const appCampus = Router();
 
+let db = await con(); // coloco la conexion global para este router
+let usuario = db.collection("usuario"); // coloco esto para no estar haciendolo en cada endpoint
 
-//get por id
-appCampus.get("/",limitGrt(), async(req,res)=>{
+
+//get all
+appCampus.get("/",limitGrt(), appMiddlewareCampusVerify, async (req, res) => {
+    let result = await usuario.find({}).toArray();
+    console.log(req.rateLimit) // para mostrar el limite de solicitudes
+    res.send(result);
+});
+
+//get por id por params
+appCampus.get("/:id",limitGrt(),appMiddlewareCampusVerify,async(req,res)=>{
     console.log(req.rateLimit)
-    if (!req.rateLimit) return; //el return vacio es para que se salga del if
-    let {id} = req.body; //desestructuro
-    let db = await con();
-    let usuario = db.collection("usuario");
+    let {id} = req.params; //desestructuro
     let result = await usuario.find({_id: new ObjectId(id)}).toArray();
-    res.send(result)
+    res.send(result[0])
 })
 
 //Post
-appCampus.post("/",limitGrt(),appmiddlewareCampus,async(req,res)=>{
-    if(!req.rateLimit) return;
-    let db = await con();
-    let usuario = db.collection("usuario");
+appCampus.post("/",limitGrt(),appMiddlewareCampusVerify,appDTOData,async(req,res)=>{
+    let resul;
     try{
         let result = await usuario.insertOne(req.body);
         console.log(result);
         res.send("tolis");
     } catch (error){
-        console.log(error);
-        res.send("pailas")
+        resul = JSON.parse(error.errInfo.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied[0].description);
+        res.status(resul.status).send(resul);
     }
 })
 
